@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- model check: tools/view.html?m=bluetang,clownfish  rows = models, columns = side (head
+     should point right), top (head right), front (looking at the face), each normalised to length 1 -->
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#2a4a66;overflow:hidden}</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three.module.js", "three/addons/": "../vendor/addons/" } }</script>
+</head><body><pre id="log" style="position:fixed;top:0;left:0;color:#fff;margin:0"></pre><script>addEventListener('error',e=>document.getElementById('log').textContent+=e.message+'\n');addEventListener('unhandledrejection',e=>document.getElementById('log').textContent+=String(e.reason)+'\n');</script><script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+const names = (new URLSearchParams(location.search).get('m') || 'bluetang').split(',');
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+r.setPixelRatio(1); r.setSize(innerWidth, innerHeight); r.setScissorTest(true);
+r.outputColorSpace = THREE.SRGBColorSpace; document.body.appendChild(r.domElement);
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const scenes = [];
+for (const n of names) {
+  const g = await loader.loadAsync('../models/' + n + '.glb');
+  const s = new THREE.Scene();
+  s.add(new THREE.HemisphereLight(0xffffff, 0x666666, 2.0)); const d = new THREE.DirectionalLight(0xffffff, 2); d.position.set(1, 2, 3); s.add(d);
+  s.add(g.scene); s.add(new THREE.AxesHelper(0.6));
+  scenes.push(s);
+}
+const W = innerWidth / 3, H = innerHeight / names.length;
+const cam = new THREE.OrthographicCamera(-0.65, 0.65, 0.65 * H / W, -0.65 * H / W, 0.01, 10);
+const views = [[0, 0, 3], [0, 3, 0.001], [3, 0, 0]];
+scenes.forEach((s, i) => views.forEach((v, j) => {
+  r.setViewport(j * W, innerHeight - (i + 1) * H, W, H); r.setScissor(j * W, innerHeight - (i + 1) * H, W, H);
+  cam.position.set(...v); cam.up.set(0, 1, 0); if (j === 1) cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0);
+  r.render(s, cam);
+}));
+document.title = 'done'; document.body.dataset.done = '1';
+</script></body></html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- Reef: a living coral reef in 3D. Open it full screen and watch.
+       ?hour=H     time of day (0-24) instead of the computer's clock
+       ?t=S        start S seconds into the simulation (stills, clips)
+       ?px=R       render pixel ratio (default 1.5)
+       ?fps=1      frame-rate readout -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reef</title>
+<style>
+  html, body { margin:0; height:100%; background:#04263f; overflow:hidden; cursor:none; }
+  canvas { display:block; width:100vw; height:100vh; }
+  #fps { position:fixed; left:8px; top:6px; font:12px monospace; color:#9cf; display:none; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
+</script>
+</head>
+<body>
+<div id="fps"></div>
+<script type="module" src="./reef.js"></script>
+</body>
+</html>
